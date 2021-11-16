@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 class Simulator {
     private int groupSize;
@@ -71,7 +70,7 @@ class Simulator {
 
         Group[] groups = new Group[teams.size() / groupSize];
         for (int i = 0; i < groups.length; i++)
-            groups[i] = new Group(); // init with the null group
+            groups[i] = new Group(groupSize); // init with the null group
 
         //Creating pots
         List<ArrayList<Team>> pots = new LinkedList<>();
@@ -135,55 +134,6 @@ class Simulator {
         }
 
         return null;
-    }
-
-    private class Group {
-        private Team[] teams;
-
-        public Group() {
-            this.teams = new Team[groupSize];
-            for (int i = 0; i < groupSize; i++)
-                teams[i] = new Team("", 0); // adding "null" teams
-
-        }
-
-        public void add(Team team) {
-
-            teams[team.getSeeding() - 1] = team;
-        }
-
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n");
-            for (int i = 0; i < teams.length; i++) {
-                sb.append(teams[i].toString() + "\n");
-            }
-            return sb.toString();
-        }
-    }
-
-    private static class Team implements Comparable<Team> {
-        private String name;
-        private int seedPos;
-
-        public Team(String name, int seedPos) {
-            this.name = name;
-            this.seedPos = seedPos;
-        }
-
-        public String toString() {
-            return name;
-        }
-
-        public int getSeeding() {
-            return seedPos;
-        }
-
-        @Override
-        public int compareTo(Team t2) {
-            return Integer.compare(getSeeding(), t2.getSeeding());
-        }
-
     }
 
     private LinkedList<String> scanFile(String fileName) {
