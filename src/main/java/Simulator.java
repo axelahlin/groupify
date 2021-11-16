@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 class Simulator {
     private int groupSize;
@@ -89,10 +90,17 @@ class Simulator {
             pots.add(currentPot);
         }
 
+
         for (ArrayList<Team> pot : pots) {
             int i = 0;
+
+            List<Boolean> picks = new ArrayList<Boolean>(Arrays.asList(new Boolean[pot.size()])); //UGLY
+            Collections.fill(picks, false);
             while (!pot.isEmpty()) {
-                Team current = retrieveRandomTeam(pot);
+
+                Team current = retrieveRandomTeam(pot, picks);
+
+
                 pot.remove(current);
 
                 System.out.println("Drawing " + current.toString() + " to group " + (i + 1));
@@ -110,19 +118,21 @@ class Simulator {
         return groups;
     }
 
-    private Team retrieveRandomTeam(ArrayList<Team> pot) {
+
+    private Team retrieveRandomTeam(ArrayList<Team> pot, List<Boolean> picks) {
         Random rand = new Random(System.currentTimeMillis());
 
-
-        int i = rand.nextInt() % pot.size();
-        try {
-            if (!pot.isEmpty() && pot.get(i) != null) {
-                return pot.get(i);
+        while (picks.contains(false)) {
+            try {
+                int i = rand.nextInt(picks.size() + 1);
+                if (!pot.isEmpty() && !picks.get(i)) {
+                    picks.remove(i);
+                    return pot.get(i);
+                }
+            } catch (IndexOutOfBoundsException e) { // bad practice
+                //bla bla
             }
-        } catch (NullPointerException e) {
-            retrieveRandomTeam(pot);
         }
-
 
         return null;
     }
