@@ -51,7 +51,7 @@ class Simulator {
 
     private void printGroups(Group[] groups) {
         for (int i = 0; i < groups.length; i++) {
-            System.out.println("== Group " + (i+1) + " ==");
+            System.out.println("== Group " + (i + 1) + " ==");
             System.out.println(groups[i].toString());
         }
 
@@ -72,15 +72,16 @@ class Simulator {
         for (int i = 0; i < groups.length; i++)
             groups[i] = new Group(); // init with the null group
 
-
-        List<HashSet<Team>> pots = new LinkedList<>();
+        //Creating pots
+        List<ArrayList<Team>> pots = new LinkedList<>();
         //pot splitter
         LinkedList<Team> potTeams = (LinkedList) teams.clone(); //UGLY AFFFFF
         Collections.sort(potTeams);
 
+
         final int potSize = potTeams.size() / groupSize;
         for (int i = 0; i < groupSize; i++) {
-            HashSet<Team> currentPot = new HashSet<>();
+            ArrayList<Team> currentPot = new ArrayList<>();
             for (int j = 0; j < potSize; j++) { //FIX THIS AND GENERALIZE
                 Team current = potTeams.remove(0);
                 currentPot.add(current);
@@ -88,10 +89,10 @@ class Simulator {
             pots.add(currentPot);
         }
 
-        for (HashSet<Team> pot : pots) {
+        for (ArrayList<Team> pot : pots) {
             int i = 0;
             while (!pot.isEmpty()) {
-                Team current = pot.iterator().next();
+                Team current = retrieveRandomTeam(pot);
                 pot.remove(current);
 
                 System.out.println("Drawing " + current.toString() + " to group " + (i + 1));
@@ -103,31 +104,27 @@ class Simulator {
                     groups[i].add(current);
                     i++;
                 }
-
-
             }
         }
 
-
-        /* int i = 0;
-        while (teams.size() != 0) {
-
-            Team head = teams.remove(0);
-
-            System.out.println("Drawing " + head.toString() + ", seeded at position " + i);
-
-
-            if (i == 7) {
-
-                i = 0;
-            } else {
-                i++;
-
-            }
-            groups[i].add(head);
-        }
- */
         return groups;
+    }
+
+    private Team retrieveRandomTeam(ArrayList<Team> pot) {
+        Random rand = new Random(System.currentTimeMillis());
+
+
+        int i = rand.nextInt() % pot.size();
+        try {
+            if (!pot.isEmpty() && pot.get(i) != null) {
+                return pot.get(i);
+            }
+        } catch (NullPointerException e) {
+            retrieveRandomTeam(pot);
+        }
+
+
+        return null;
     }
 
     private class Group {
