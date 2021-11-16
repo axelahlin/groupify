@@ -1,13 +1,7 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
-import java.io.*;
-
-class GroupDraw {
-
-    public static void main(String[] args) {
-        new Simulator(4).run("teams.txt", "seedingPts.txt");
-
-    }
-}
 
 class Simulator {
     private int groupSize;
@@ -57,7 +51,7 @@ class Simulator {
 
     private void printGroups(Group[] groups) {
         for (int i = 0; i < groups.length; i++) {
-            System.out.println("== Group " + i + " ==");
+            System.out.println("== Group " + (i+1) + " ==");
             System.out.println(groups[i].toString());
         }
 
@@ -71,24 +65,27 @@ class Simulator {
 
         System.out.println("\n" + "Trying to draw groups...");
 
-        List<Team> teams = data;
+        LinkedList<Team> teams = data;
         Collections.sort(teams);
 
         Group[] groups = new Group[teams.size() / groupSize];
         for (int i = 0; i < groups.length; i++)
-            groups[i] = new Group(); // the null group
+            groups[i] = new Group(); // init with the null group
 
-        
 
         List<HashSet<Team>> pots = new LinkedList<>();
         //pot splitter
-        List<Team> potTeams = new LinkedList<>(teams); //UGLY AFFFFF
-        for (int i = 0; i < potTeams.size()/groupSize; i++) {
-            HashSet<Team> pot = new HashSet<>();
-            for (int j = 0; j < potTeams.size()/groupSize; j++) {
-                pot.add(potTeams.remove(j));
+        LinkedList<Team> potTeams = (LinkedList) teams.clone(); //UGLY AFFFFF
+        Collections.sort(potTeams);
+
+        final int potSize = potTeams.size() / groupSize;
+        for (int i = 0; i < groupSize; i++) {
+            HashSet<Team> currentPot = new HashSet<>();
+            for (int j = 0; j < potSize; j++) { //FIX THIS AND GENERALIZE
+                Team current = potTeams.remove(0);
+                currentPot.add(current);
             }
-            pots.add(pot);
+            pots.add(currentPot);
         }
 
         for (HashSet<Team> pot : pots) {
@@ -97,16 +94,16 @@ class Simulator {
                 Team current = pot.iterator().next();
                 pot.remove(current);
 
-                System.out.println("Drawing " + current.toString() + " to group " + (i+1));
+                System.out.println("Drawing " + current.toString() + " to group " + (i + 1));
 
                 if (i == 7) {
-                
+                    groups[i].add(current);
                     i = 0;
                 } else {
+                    groups[i].add(current);
                     i++;
-        
                 }
-                groups[i].add(current);
+
 
             }
         }
@@ -114,18 +111,18 @@ class Simulator {
 
         /* int i = 0;
         while (teams.size() != 0) {
-            
+
             Team head = teams.remove(0);
 
             System.out.println("Drawing " + head.toString() + ", seeded at position " + i);
-            
+
 
             if (i == 7) {
-                
+
                 i = 0;
             } else {
                 i++;
-    
+
             }
             groups[i].add(head);
         }
@@ -144,8 +141,8 @@ class Simulator {
         }
 
         public void add(Team team) {
-            
-                teams[team.getSeeding()-1] = team;
+
+            teams[team.getSeeding() - 1] = team;
         }
 
         public String toString() {
@@ -158,7 +155,7 @@ class Simulator {
         }
     }
 
-    private class Team implements Comparable<Team> {
+    private static class Team implements Comparable<Team> {
         private String name;
         private int seedPos;
 
@@ -183,7 +180,7 @@ class Simulator {
     }
 
     private LinkedList<String> scanFile(String fileName) {
-        String content = new String();
+        String content;
         int count = 1;
         File file = new File(fileName);
         LinkedList<String> list = new LinkedList<String>();
