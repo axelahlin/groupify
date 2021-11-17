@@ -5,20 +5,10 @@ import java.util.*;
 
 class Simulator {
     private int groupSize;
+    private boolean allowTeamsFromSameCountryInGroup = true; //for ui impl. later
 
-    private LinkedList<Integer> convertToInts(LinkedList<String> pts) {
-        LinkedList<Integer> data = new LinkedList<>();
-
-        for (String s : pts) {
-            if (!s.equals("")) {
-                int tmp = Integer.parseInt(s);
-                data.add(tmp);
-            } else {
-                data.add(0);
-            }
-        }
-
-        return data;
+    public Simulator(int groupSize) {
+        this.groupSize = groupSize;
     }
 
     public void run(String teamFile, String seedingFile) {
@@ -55,10 +45,6 @@ class Simulator {
             System.out.println(groups[i].toString());
         }
 
-    }
-
-    public Simulator(int groupSize) {
-        this.groupSize = groupSize;
     }
 
     private Group[] placeInGroups(LinkedList<Team> data) {
@@ -157,5 +143,20 @@ class Simulator {
         }
 
         return list;
+    }
+
+    private LinkedList<Integer> convertToInts(LinkedList<String> pts) {
+        LinkedList<Integer> data = new LinkedList<>();
+
+        for (String s : pts) {
+            if (!s.equals("")) {
+                int tmp = Integer.parseInt(s);
+                data.add(tmp);
+            } else {
+                data.add(0);
+            }
+        }
+
+        return data;
     }
 }
